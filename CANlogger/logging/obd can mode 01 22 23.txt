@@ -1,0 +1,69 @@
+; sample logging configuration file for openport 2.0
+; must be named logcfg.txt and be placed in the root directory of the
+; microSD card inserted in the openport in order to work
+
+
+; this sample logs using mode $01 (J1979) and modes $22 and $23 (J2190)
+; from CAN(ISO15765) vehicles that support these modes (all support mode $01)
+;
+; each parameter be logged using the mode of your choice - multiple modes can be intermixed
+; make sure your ECU actually supports the mode though, or the logging will fail. most ECUs
+; do not support all modes
+
+;----------------obd ----------------
+; log channel settings
+type=obd
+protocolid=6 ; ISO15765 - the only protocol supported at the moment
+
+; ECUs handle mode $23 differently than the J2190 document, so we have
+; additional settings to accomodate these
+;
+; mode23txaddrwidth - this is the number of address bytes to send in the request
+; mode23txlenwidth - this is the number of length bytes to send in the request
+; mode23rxaddrwidth - this is the number of address bytes to expect in the response
+
+; for J2190 spec (default values)
+; mode23txaddrwidth = 3
+; mode23txlenwidth = 1
+; mode23rxaddrwidth = 2
+
+; for Evo X
+; mode23txaddrwidth = 3
+; mode23txlenwidth = 1
+; mode23rxaddrwidth = 0
+
+; for GM
+; mode23txaddrwidth = 4
+; mode23txlenwidth = 2
+; mode23rxaddrwidth = 4
+
+
+; this is a mode $01 parameter
+; it should work on any CAN ECU
+
+paramname=rpm
+mode=0x01
+paramid=0x0C
+databits=16
+scalingrpn=x,0.25
+
+
+; this is a mode $22 parameter
+; it is commented out because not all ECUs support these
+
+;paramname=rpm22
+;mode=0x22
+;paramid=0x0C
+;databits=16
+;scalingrpn=x,0.25
+
+
+; this is a mode $23 parameter
+; it is commented out because the RAM addresses are ECU / ROM specific
+; and you will need to know these for your particular ECU
+
+;paramname=PSIG
+;mode=0x23
+;paramid=0x80871a
+;databits=16				
+;scalingrpn=x,0.0483675,*,14.5,-

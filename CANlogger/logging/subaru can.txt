@@ -1,0 +1,185 @@
+; sample logging configuration file for openport 2.0
+; must be named logcfg.txt and be placed in the root directory of the
+; microSD card inserted in the openport in order to work
+
+; this sample logs using the SSM protocol over CAN, which only works
+; with newer CAN-based Subarus. 
+;
+; note that everything is the same as the K-line example, except that "type=ssmcan"
+
+;----------------ssm----------------
+; log channel settings
+
+; we are logging SSM via CAN
+type = ssmcan				
+
+; each parameter gets a name you chose
+paramname = RPM				
+
+; the paramid is used in the SSM request
+;
+; unfortunately SSM over CAN does not support reading RAM addresses via the paramid,
+; so it is not possible to read internal values. you can still do this via the K-line 
+; but the ECU only supports doing one protocol at a time
+paramid = 0x0E				
+
+; how many bits in the returned value (defaults to 8, so you usually don't need to specify this)
+databits = 16				
+
+; how to scale the results using a RPN (http://en.wikipedia.org/wiki/Reverse_Polish_notation) notation, with data and operators seperated by commas
+; the operators are as following:
+;       + : add
+;       - : subtract
+;       * : multiply
+;       / : divide
+;
+;       x : represents the raw (unscaled) parameter
+; 123.456 : example of a constant
+;
+; if no scaling is specified, the raw value will be used
+;
+; the OP2 has no FPU - it must do floating point calculations in software which can 
+; create performance issues, so be efficient in your RPN expressions by doing the following:
+;
+; * minimize the number of operations; e.g. ((x * 2) + 1) * 2 => x * 4 + 2
+; * don't divide by a constant when you can multiply instead; e.g. x / 4 => x * 0.25
+; * don't make constant expressions that can instead be pre-calculated; e.g. x * 3 / 4 => x * 0.75
+
+scalingrpn = x,0.25,*	
+
+; continue specifying other parameters
+paramname = load
+paramid = 0x07
+scalingrpn = x,0.3921569,*
+
+paramname = speed
+paramid = 0x10
+scalingrpn = x,0.621371192,*
+
+paramname = IAT
+paramid = 0x12
+scalingrpn = x,0.40,-
+priority = 2
+
+paramname = coolant_temp
+paramid = 0x08
+scalingrpn = x,0.40,-
+priority = 2
+
+paramname = battery_volts
+paramid = 0x1C
+scalingrpn = x,0.08,*
+priority = 2
+
+paramname = mrp
+paramid = 0x24
+scalingrpn = x,128,-,0.145098,*
+
+paramname = MAF
+paramid = 0x13
+databits = 16				
+scalingrpn = x,0.01,*
+
+paramname = throttle
+paramid = 0x15
+scalingrpn = x,0.3921569,*
+
+paramname = timing
+paramid = 0x11
+scalingrpn = x,128,-,0.5,*
+
+paramname = WGDC
+paramid = 0x30
+scalingrpn = x,0.3921569,*
+
+paramname = IPW ; injector #1 pulse width
+paramid = 0x11
+scalingrpn = x,0.256,*
+
+paramname = IAM
+paramid = 0xF9
+scalingrpn = x,0.0625,*
+
+; some samples of logging "bitfield" values that are not whole bytes
+; if you want to log more that one of these efficently, group them by
+; paramid and the OP2 will only issue a single request to get all of 
+; the bits within each paramid
+
+paramname = ignition_sw
+paramid = 0x62
+databits = 1
+offsetbits = 3
+
+; to still acquire a parameter (perhaps for triggering or a calculation)
+; but not record it in the log, set isvisible equal to zero (it is 1 by default)
+isvisible = 0 
+
+paramname = AC_sw
+paramid = 0x62
+databits = 1
+offsetbits = 1
+isvisible = 0 
+
+paramname = defogger_sw
+paramid = 0x64
+databits = 1
+offsetbits = 5
+isvisible = 0 
+
+paramname = blower_sw
+paramid = 0x64
+databits = 1
+offsetbits = 4
+isvisible = 0 
+
+paramname = clutch_sw
+paramid = 0x121
+databits = 1
+offsetbits = 7
+
+paramname = brake_sw
+paramid = 0x121
+databits = 1
+offsetbits = 3
+
+;-------------calculated parameter---------------
+;
+; you can derive calculated parameters from other parameters
+; using RPN expressions
+;
+type = calc				
+
+paramname = IDC
+scalingrpn = RPM,IPW,*,0.0008333333,*
+
+;-------------triggers---------------
+;
+; note that parameters must be previously defined 
+; before defining triggers using them
+;
+; triggers allow you to control when logging starts and stops
+; this example sets up triggers such that logging only occurs
+; when the engine is running (RPM > 0)
+;
+; triggers consist of a condition (a RPN expression using comparison operators)
+; and an action. the RPN comparison operators match those in the C language:
+;
+; > < >= <= == != && ||
+;
+; if the condition evaluates to a non-zero value, that action is taken
+
+conditionrpn = RPM,0,>	
+action = start
+
+conditionrpn = RPM,0,==
+action = stop
+
+; here is a second triggering example using the rear defogger switch
+; uncomment it and comment out the sample above to use it
+
+;conditionrpn = defogger_sw,1,==
+;action = start
+
+;conditionrpn = defogger_sw,0,==
+;action = stop
+

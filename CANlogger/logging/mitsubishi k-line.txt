@@ -1,0 +1,167 @@
+; sample logging configuration file for openport 2.0
+; must be named logcfg.txt and be placed in the root directory of the
+; microSD card inserted in the openport in order to work
+
+; this sample logs using the MUT-II protocol over the K-line, which works
+; for many mitsubishis, including the EVO 8 and 9
+
+;----------------mut2----------------
+type=mut2				
+
+; you can also set an OBD pin to a voltage, ground, or a high impedance state
+; the first number is the OBD pin number, the second number is the pin voltage with the following values:
+;
+; 8000-18000 : voltage in millivolts for OP2 Rev C and earlier
+; 5000-25000 : voltage in millivolts for OP2 Rev D and later
+; -1         : set pin to high impedance (default state)
+; -2         : pull pin to ground
+;
+; keep in mind that if you are applying a non-zero voltage to more than one pin, all of those voltages
+; must be the same
+
+; the following setpinvoltage sets OBD pin 1 to ground, which is needed to enable logging on older Mitsubishis
+; it is commented out as it is not needed for newer models (e.g. EVO 8/9)
+;
+; setpinvoltage=1,-2 
+
+
+paramname=TimingAdv
+paramid=0x06
+scalingrpn=x,20,-
+
+paramname=CoolantTemp
+paramid=0x07
+priority=2
+
+paramname=FuelTrim_Low
+paramid=0x0C
+scalingrpn=x,0.19607843,*,25,-
+priority=2
+
+paramname=FuelTrim_Middle
+paramid=0x0D
+scalingrpn=x,0.19607843,*,25,-
+priority=2
+
+paramname=FuelTrim_High
+paramid=0x0E
+scalingrpn=x,0.19607843,*,25,-
+priority=2
+
+paramname=O2FeedbackTrim
+paramid=0x0E
+scalingrpn=x,0.19607843,*,25,-
+priority=2
+
+paramname=EGRTemp
+paramid=0x12
+scalingrpn=x,-2.7,*,597.7,+
+priority=2
+
+paramname=O2Sensor
+paramid=0x13
+scalingrpn=x,0.0195,*
+
+paramname=Battery
+paramid=0x14
+scalingrpn=x,0.0733,*
+priority=2
+
+paramname=Baro
+paramid=0x15
+scalingrpn=x,0.5,*
+priority=2
+
+paramname=ISCSteps
+paramid=0x16
+
+paramname=TPS
+paramid=0x17
+scalingrpn=x,0.39215686,*
+
+paramname=Airflow
+paramid=0x1A
+scalingrpn=x,6.29,*
+
+paramname=ECULoad
+paramid=0x1C
+scalingrpn=x,0.625,*
+
+paramname=AccelEnrich
+paramid=0x1D
+scalingrpn=x,0.39215686,*
+
+paramname=O2SensorRear
+paramid=0x1F
+scalingrpn=x,0.0195,*
+
+paramname=RPM
+paramid=0x21
+scalingrpn=x,31.25,*
+
+paramname=TargetIdle
+paramid=0x24
+scalingrpn=x,7.8,*
+priority=2
+
+paramname=KnockSum
+paramid=0x26
+priority=2
+
+paramname=OCTNumber
+paramid=0x27
+priority=2
+
+paramname=InjPulseWidth
+paramid=0x29
+scalingrpn=x,0.256,*
+
+paramname=AirVol
+paramid=0x2C
+
+paramname=Speed
+paramid=0x2F
+scalingrpn=x,1.242742384,*
+
+paramname=Knock
+paramid=0x30
+
+paramname=AFRMAP
+paramid=0x32
+
+paramname=MDP
+paramid=0x38
+scalingrpn=x,1.25,*
+
+paramname=AirTemp
+paramid=0x3A
+priority=2
+
+paramname=KnockADC
+paramid=0x6A
+priority=2
+
+paramname=KnockBase
+paramid=0x6B
+priority=2
+
+paramname=KnockVar
+paramid=0x6C
+priority=2
+
+paramname=KnockChange
+paramid=0x6D
+priority=2
+
+paramname=KnockDynamics
+paramid=0x6E
+priority=2
+
+paramname=KnockFlag
+paramid=0x6F
+priority=2
+
+paramname=WGDC
+paramid=0x86
+scalingrpn=x,0.39215686,*
+

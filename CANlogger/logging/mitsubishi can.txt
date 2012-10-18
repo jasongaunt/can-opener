@@ -1,0 +1,70 @@
+; sample logging configuration file for openport 2.0
+; must be named logcfg.txt and be placed in the root directory of the
+; microSD card inserted in the openport in order to work
+
+; this sample logs using the KWP2000 ReadMemoryAddress command over the ISO15765, which works
+; for CAN based mitsubishis that have had their ROMs modified to allow the use of this command.
+; this command is also known as "mode23" on some forums. since this command reads directly from 
+; ECU memory, the paramid addresses used are different for different ROM versions. the following 
+; example is for the USDM EVO X ROMs in the 526800xx series.
+
+;----------------mrmacan evox----------------
+; log channel settings
+type=mrmacan
+
+paramname=RPM				
+paramid=0x80874f
+scalingrpn=x,31.25,*
+
+paramname=PSIG				
+paramid=0x80871a
+databits=16				
+scalingrpn=x,0.0483675,*,14.5,-
+
+paramname=TimingAdv				
+paramid=0x808a07
+scalingrpn=x,20,-
+
+paramname=Load				
+paramid=0x80876e
+databits=16				
+scalingrpn=x,0.3125,*
+
+paramname=IPW				
+paramid=0x80a944
+databits=16
+scalingrpn=x,0.001,*
+
+paramname=TPS				
+paramid=0x8086f9
+scalingrpn=x,0.3921569,*
+
+paramname=Speed				
+paramid=0x8087e7
+scalingrpn=x,2,*
+
+paramname=ActiveWGDC				
+paramid=0x808b53
+scalingrpn=x,0.5,*
+
+paramname=PassiveWGDC				
+paramid=0x80a53f
+scalingrpn=x,0.5,*
+
+; log these items a little less often using a sampgroup (see subaru example for more details)
+
+paramname=KnockSum				
+paramid=0x808a4b
+sampgroup = 1
+
+paramname=FuelTrim_Idle				
+paramid=0x804573
+scalingrpn=x,0.1953125,*,25,-
+sampgroup = 1
+
+paramname=FuelTrim_Cruise				
+paramid=0x804575
+scalingrpn=x,0.1953125,*,25,-
+sampgroup = 1
+
+

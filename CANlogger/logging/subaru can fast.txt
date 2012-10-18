@@ -1,0 +1,108 @@
+type = ssmcan
+
+paramname = RPM				
+paramid = 0x0E				
+databits = 16				
+scalingrpn = x,0.25,*	
+sampinterval = 5
+
+paramname = speed
+paramid = 0x10
+scalingrpn = x,0.621371192,*
+sampinterval = 2
+
+paramname = IAT
+paramid = 0x12
+scalingrpn = x,0.40,-
+;priority = 2
+
+paramname = coolant_temp
+paramid = 0x08
+scalingrpn = x,0.40,-
+;priority = 2
+
+paramname = MAF
+paramid = 0x13
+databits = 16				
+scalingrpn = x,0.01,*
+sampinterval = 2
+
+paramname = throttle
+paramid = 0x15
+scalingrpn = x,0.3921569,*
+sampinterval = 2
+
+paramname = timing
+paramid = 0x11
+scalingrpn = x,128,-,0.5,*
+
+;paramname = fbasetiming
+;paramid = 0xFF7C5C
+;isfloat = 1
+
+paramname = fWGDmax
+paramid = 0xFF5EA0
+isfloat = 1
+
+paramname = IPW ; injector #1 pulse width
+paramid = 0xFF7B10
+isfloat = 1
+scalingrpn = x,0.001,*
+
+paramname = fMAP
+paramid = 0xFF6394
+isfloat = 1
+scalingrpn = x,0.01933677,*
+
+;paramname = fboosterr
+;paramid = 0xFF5E7C
+;isfloat = 1
+;scalingrpn = x,0.01933677,*
+
+;paramname = ftargboost
+;paramid = 0xFF5E84
+;isfloat = 1
+;scalingrpn = x,0.01933677,*
+
+paramname = fLoad
+paramid = 0xFF6578
+isfloat = 1
+sampinterval = 5
+
+;paramname = fIAM
+;paramid = 0xFF3014
+;isfloat = 1
+;priority = 2
+
+;paramname = fKCAdv
+;paramid = 0xFF7F7C
+;isfloat = 1
+
+paramname = fAFSensor1
+paramid = 0xFF66D4
+isfloat = 1
+
+paramname = clutch_sw
+paramid = 0x121
+databits = 1
+offsetbits = 7
+
+paramname = brake_sw
+paramid = 0x121
+databits = 1
+offsetbits = 3
+
+
+;-------------triggers---------------
+
+; only log when the engine is running
+conditionrpn = RPM,0,>	
+action = start
+
+conditionrpn = RPM,0,==
+action = stop
+
+; start logging to a new file when the throttle goes from previously below 95 to above 95
+; #throttle refers to the previous throttle sample
+conditionrpn = throttle,95,>,#throttle,95,<=,&&
+action = newfile

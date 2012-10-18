@@ -1,0 +1,38 @@
+; sample logging configuration file for openport 2.0
+; must be named logcfg.txt and be placed in the root directory of the
+; microSD card inserted in the openport in order to work
+
+; this sample logs using the SSM protocol over the K-line, which works
+; for both CAN-based and older Subarus
+
+; this particular example is simplified to show the use of Subaru K-line logging
+; along with the serial output of the AEM UEGO gauge unit (which is RS-232)
+; the gauge can be connected by wiring the gauge RS-232 TX and ground signals to the 
+; ring and sleeve terminals of a 3/32" stereo plug which can then be plugged into
+; the OP2.
+
+;----------------ssm----------------
+type=ssmk				
+
+; just logging one parameter here - look at the other Subaru examples to see how to do more
+paramname = RPM				
+paramid = 0x0E				
+databits = 16				
+scalingrpn = x,0.25,*	
+
+;----------------aem----------------
+; the "ascii" channel type can listen on any protocol for incoming numeric text
+; the default protocolid is 9, which corresponds to the 3/32" jack receive-only serial port
+; the default baud rate and setting are 9600,N,8,1. all of these can be changed for other scenarios
+
+; the ascii channel considers anything other than the characters {'0'-'9','+','-','.','E','e'} to be a 
+; delimiter between different numbers. furthermore, the carriage return and line feed characters are 
+; considered to mark the beginning of a new row of data. you can sample data from a particular column of
+; numbers by choosing a paramid starting at 1 which indicates the column number
+
+; in the case of the AEM UEGO, there is simply one column of data, and it is already scaled appropriately
+
+type=ascii
+paramname = AFR
+paramid = 1
+
