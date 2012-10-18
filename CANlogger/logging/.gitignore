@@ -1,7 +1,6 @@
-# Do not ignore these extensions
+# Ignore all by default
+*
+# But not ignore these extensions
 !*.cpp
 !*.h
 !*.txt
-
-# Ignore remainder by default
-**/*
