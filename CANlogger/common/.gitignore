@@ -1,0 +1,6 @@
+# Do not ignore these extensions
+!*.cpp
+!*.h
+
+# Ignore remainder by default
+**/*

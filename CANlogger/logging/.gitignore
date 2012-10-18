@@ -1,0 +1,7 @@
+# Do not ignore these extensions
+!*.cpp
+!*.h
+!*.txt
+
+# Ignore remainder by default
+**/*
