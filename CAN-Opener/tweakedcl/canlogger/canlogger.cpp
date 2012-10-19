@@ -20,8 +20,8 @@ void usage()
 {
 	printf(
 		"logs (sniffs) CAN data.\n\n"
-		"canlogger [logfile] {switches}\n\n"
-		"    [outfile]          log file to write\n"
+		"canlogger {logfile} {switches}\n\n"
+		"    [outfile]          log file to write (or STDOUT if not present)\n"
 		"    /b [baudrate]		CAN baud rate to use (500000 is the default)\n"
 		"    /p {can,iso15765}  protocol to use (can (default) passes all IDs, iso15765 only looks at 0x07E0 and 0x07E8\n"
 		);
@@ -40,7 +40,7 @@ void reportJ2534Error()
 	printf("J2534 error [%s].",err);
 }
 
-void dump_msg(PASSTHRU_MSG* msg)
+void dump_msg_to_file(PASSTHRU_MSG* msg)
 {
 	if (msg->RxStatus & START_OF_MESSAGE)
 		return; // skip
@@ -49,6 +49,17 @@ void dump_msg(PASSTHRU_MSG* msg)
 	for (unsigned int i = 0; i < msg->DataSize; i++)
 		fprintf(fpo,"%02X ",msg->Data[i]);
 	fprintf(fpo,"\n");
+}
+
+void dump_msg_to_stdio(PASSTHRU_MSG* msg)
+{
+	if (msg->RxStatus & START_OF_MESSAGE)
+		return; // skip
+
+	printf("[%u] ",msg->Timestamp);
+	for (unsigned int i = 0; i < msg->DataSize; i++)
+		printf("%02X ",msg->Data[i]);
+	printf("\n");
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -92,17 +103,17 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			if (!outfile)
 				outfile = argv[argi];
-			else
-				usage();
+			//else
+			//	usage();
 		}
 	}
-	if (!outfile)
-		usage();
-
-	if (NULL == (fpo = fopen(outfile,"wb")))
+	if (outfile)
 	{
-		printf("can't open output file.\n");
-		return 0;
+		if (NULL == (fpo = fopen(outfile,"wb")))
+		{
+			printf("can't open output file.\n");
+			return 0;
+		}
 	}
 
 	if (!j2534.init())
@@ -209,7 +220,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		j2534.PassThruReadMsgs(chanID,&rxmsg,&numRxMsg,1000);
 		if (numRxMsg)
 		{
-			dump_msg(&rxmsg);
+			if (outfile)
+			{
+				dump_msg_to_file(&rxmsg);
+			}
+			else
+			{
+				dump_msg_to_stdio(&rxmsg);
+			}
 			msgCnt++;
 			if (time(NULL) - last_status_update > 0)
 			{
@@ -219,7 +237,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	fclose(fpo);
+	if (outfile)
+	{
+		fclose(fpo);
+	}
 
 	// shut down the channel
 
