@@ -5,8 +5,8 @@ A Ruby application built around the OpenPort J2534 CANBUS library
 The project goals (subject to evolution) are as follows in order of priority with those goals achieved struck through;
 
 1. Set up basic repo with CANlogger original source code - **DONE**
-2. Provide a visual representation of data (packets) flowing through the CANBUS
-	* Rework CANlogger to output its data to a STDIO channel that ruby can utilise
+2. Provide a visual representation of data (packets) flowing through the CANBUS - *In Progress*
+	* Rework CANlogger to output its data to a STDIO channel that ruby can utilise - **DONE**
 	* Build a basic ruby script around CANLogger to output received data
 	* Build a GUI on top of that, moving away from command line
 3. Determine if it's possible (and then implement how) to switch between different speed CAN busses
